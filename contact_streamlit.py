@@ -8,7 +8,8 @@ st.set_page_config(page_title="Contact", page_icon=":shark:", layout="wide") #"r
 #For Excel File
 sh_name = None #"职能", None
 pd.set_option('display.max_columns', None)
-fn = os.path.dirname(os.path.realpath(__file__))+f"/2022.01.xlsx"
+# fn = os.path.dirname(os.path.realpath(__file__))+f"/2022.01.xlsx"
+fn = "2022.01.xlsx"
 
 @st.cache(persist=True)
 def get_data():

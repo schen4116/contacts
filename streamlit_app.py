@@ -43,7 +43,7 @@ print(f"{df.columns}")
 fn_time = time.strftime('%Y-%m', time.gmtime(os.path.getmtime(fn)))
 st.title(f"Contacts (updated on: {fn_time})")
 key = st.text_input("") #placeholder="输入关键字以查找..."
-st.text("* 用法：（1）关键词：查询记录; （2）@+研究所：查询成员；（3）空白：查询统计")
+st.text("* 用法：（1）关键词：查询记录，多个关键字以空格隔开; （2）@+研究所：查询成员；（3）空白：显示人员统计")
 # col1, col2 = st.columns([1,5])
 # with col1:
 #     opt = st.selectbox("选择查询项", tuple(df.columns), index=1)
@@ -102,18 +102,46 @@ if key=="":
     st.markdown(hide_table_row_index, unsafe_allow_html=True)
     st.table(dfj)
     st.info(f'详细通讯录：')
+    st.table(df_sel.astype(str)) #.astype(str)
 elif key.find("@")!=-1:
-    df_sel = df.loc[(key[1:],)]
-    st.info(f'找到{len(df_sel.index)}条记录：')
+    try:
+        df_sel = df.loc[(key[1:],)]
+        st.info(f'找到研究所“{key[1:]}”的{len(df_sel.index)}条记录：')
+        st.table(df_sel.astype(str)) #.astype(str)
+    except:
+        st.info(f'无此研究所名称！')
 else:
-    cond = None
-    for opt in list(df.columns):
-        print(f"{opt}")
-        if cond is None:
-            cond = df[opt].str.contains(key, na=False)
-        else:
-            cond = cond | df[opt].str.contains(key, na=False)
-    df_sel = df[cond]
+    # cond = None
+    # key_all = key.split(" ")
+    # for opt in list(df.columns):
+    #     print(f"{opt}")
+    #     ci = None
+    #     for ki in key_all:
+    #         c_temp = df[opt].str.contains(ki, na=False)
+    #         if ci is None:
+    #             ci = c_temp
+    #         else:
+    #             ci = ci & c_temp
+
+    #     if cond is None:
+    #         cond = ci
+    #     else:
+    #         cond = cond | ci
+            
+    # df_sel = df[cond]
+    # st.info(f'找到{len(df_sel.index)}条记录：')
+    key_all = key.split(" ")
+    df_sel = df
+    for ki in key_all:
+        cond = None
+        for opt in list(df_sel.columns):
+            if cond is None:
+                cond = df_sel[opt].str.contains(ki, na=False)
+            else:
+                cond = cond | df_sel[opt].str.contains(ki, na=False)
+            
+        df_sel = df_sel[cond]
+
     st.info(f'找到{len(df_sel.index)}条记录：')
+    st.table(df_sel.astype(str)) #.astype(str)
     
-st.table(df_sel.astype(str)) #.astype(str)
